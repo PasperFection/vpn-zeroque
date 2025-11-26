@@ -737,7 +737,7 @@ show_menu() {
     echo -e "${BLUE}║${NC}  ${YELLOW}[TOOLS & MONITORING]${NC}                                                     ${BLUE}║${NC}"
     echo -e "${BLUE}║${NC}  20)  📊 Systeem Status Weergeven                                         ${BLUE}║${NC}"
     echo -e "${BLUE}║${NC}  21)  🔍 Security Audit Uitvoeren (Lynis)                                 ${BLUE}║${NC}"
-    echo -e "${BLUE}║${NC}  22)  💾 Backup Configuratie Maken                                        ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  22)  💾 Backup Configuratie maken                                        ${BLUE}║${NC}"
     echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
     echo -e "${BLUE}║${NC}   ${RED}0)  ❌ Exit${NC}                                                            ${BLUE}║${NC}"
     echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
@@ -887,8 +887,11 @@ backup_configuration() {
     # Backup UFW rules
     if command -v ufw &> /dev/null; then
         mkdir -p "${backup_location}/ufw-rules"
-        ufw status verbose > "${backup_location}/ufw-rules/ufw-status.txt" 2>/dev/null || true
-        info "UFW status gebackupt"
+        if ! ufw status verbose > "${backup_location}/ufw-rules/ufw-status.txt" 2>&1; then
+            warning "Kon UFW status niet ophalen"
+        else
+            info "UFW status gebackupt"
+        fi
     fi
     
     # Backup Docker informatie
@@ -908,7 +911,9 @@ backup_configuration() {
     
     # Maak tar archief
     local archive_name="/root/backup-${backup_timestamp}.tar.gz"
-    tar -czf "$archive_name" -C "/root" "manual-backup-${backup_timestamp}" 2>/dev/null
+    if ! tar -czf "$archive_name" -C "/root" "manual-backup-${backup_timestamp}" 2>&1; then
+        warning "Kon backup archief niet aanmaken"
+    fi
     
     success "═══════════════════════════════════════════════════════════════"
     success "  BACKUP SUCCESVOL AFGEROND!"

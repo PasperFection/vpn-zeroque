@@ -705,35 +705,44 @@ EOF
 
 show_menu() {
     clear
-    echo "═══════════════════════════════════════════════════════════════"
-    echo "  Enterprise Production Server Hardening Script"
-    echo "  Ubuntu 24.04 LTS - Container Platform"
-    echo "═══════════════════════════════════════════════════════════════"
+    echo -e "${BLUE}╔═══════════════════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║${NC}       ${GREEN}Enterprise Production Server Hardening Script${NC}                       ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}       Ubuntu 24.04 LTS - Container Platform                               ${BLUE}║${NC}"
+    echo -e "${BLUE}╠═══════════════════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  ${YELLOW}[AANBEVOLEN]${NC}                                                            ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   1)  🚀 Volledige Automatische Installatie                               ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  ${YELLOW}[SYSTEEM & NETWERK]${NC}                                                      ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   2)  📦 Systeem Updates                                                  ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   3)  🐳 Docker Engine Installeren                                        ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   4)  🔥 Firewall (UFW) Configureren                                      ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  14)  🕐 Time Synchronization                                             ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  ${YELLOW}[BEVEILIGING]${NC}                                                            ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   5)  🔐 SSH Hardening                                                    ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   6)  🛡️  Fail2Ban Installeren                                            ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   7)  ⚙️  Kernel Security Parameters                                      ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   8)  📝 Auditd Installeren                                               ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  15)  🔧 Security Tools Installeren                                       ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  16)  🐳 Docker Security Configuratie                                     ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  ${YELLOW}[SYSTEEM CONFIGURATIE]${NC}                                                   ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   9)  🔄 Automatische Updates                                             ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  10)  💾 Swap Configuratie                                                ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  11)  📁 File System Hardening                                            ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  12)  📋 Logging Configureren                                             ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  13)  👤 User Management                                                  ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  ${YELLOW}[TOOLS & MONITORING]${NC}                                                     ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  20)  📊 Systeem Status Weergeven                                         ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  21)  🔍 Security Audit Uitvoeren (Lynis)                                 ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}  22)  💾 Backup Configuratie Maken                                        ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}   ${RED}0)  ❌ Exit${NC}                                                            ${BLUE}║${NC}"
+    echo -e "${BLUE}║${NC}                                                                           ${BLUE}║${NC}"
+    echo -e "${BLUE}╚═══════════════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    echo "  1)  Volledige Automatische Installatie (Aanbevolen)"
-    echo "  2)  Systeem Updates"
-    echo "  3)  Docker Engine Installeren"
-    echo "  4)  Firewall (UFW) Configureren"
-    echo "  5)  SSH Hardening"
-    echo "  6)  Fail2Ban Installeren"
-    echo "  7)  Kernel Security Parameters"
-    echo "  8)  Auditd Installeren"
-    echo "  9)  Automatische Updates"
-    echo "  10) Swap Configuratie"
-    echo "  11) File System Hardening"
-    echo "  12) Logging Configureren"
-    echo "  13) User Management"
-    echo "  14) Time Synchronization"
-    echo "  15) Security Tools Installeren"
-    echo "  16) Docker Security Configuratie"
-    echo ""
-    echo "  20) Systeem Status Weergeven"
-    echo "  21) Security Audit Uitvoeren (Lynis)"
-    echo "  22) Backup Configuratie"
-    echo ""
-    echo "  0)  Exit"
-    echo ""
-    echo "═══════════════════════════════════════════════════════════════"
 }
 
 # Volledige installatie
@@ -831,6 +840,90 @@ run_security_audit() {
     read -p "Druk op Enter om terug te gaan..."
 }
 
+# Backup configuratie
+backup_configuration() {
+    info "=== CONFIGURATIE BACKUP MAKEN ==="
+    
+    local backup_timestamp=$(date +%Y%m%d-%H%M%S)
+    local backup_location="/root/manual-backup-${backup_timestamp}"
+    
+    mkdir -p "$backup_location"
+    
+    info "Backup locatie: $backup_location"
+    
+    # Lijst van belangrijke configuratiebestanden
+    local config_files=(
+        "/etc/ssh/sshd_config"
+        "/etc/ssh/sshd_config.d/99-hardening.conf"
+        "/etc/ufw/ufw.conf"
+        "/etc/fail2ban/jail.local"
+        "/etc/sysctl.d/99-security.conf"
+        "/etc/docker/daemon.json"
+        "/etc/audit/rules.d/hardening.rules"
+        "/etc/apt/apt.conf.d/50unattended-upgrades"
+        "/etc/apt/apt.conf.d/20auto-upgrades"
+        "/etc/security/pwquality.conf"
+        "/etc/systemd/timesyncd.conf"
+        "/etc/systemd/journald.conf"
+        "/etc/fstab"
+    )
+    
+    local backed_up=0
+    local skipped=0
+    
+    for file in "${config_files[@]}"; do
+        if [[ -f "$file" ]]; then
+            local backup_path="${backup_location}$(dirname "$file")"
+            mkdir -p "$backup_path"
+            cp -p "$file" "${backup_path}/$(basename "$file")"
+            info "Gebackupt: $file"
+            ((backed_up++))
+        else
+            warning "Bestand niet gevonden (overgeslagen): $file"
+            ((skipped++))
+        fi
+    done
+    
+    # Backup UFW rules
+    if command -v ufw &> /dev/null; then
+        mkdir -p "${backup_location}/ufw-rules"
+        ufw status verbose > "${backup_location}/ufw-rules/ufw-status.txt" 2>/dev/null || true
+        info "UFW status gebackupt"
+    fi
+    
+    # Backup Docker informatie
+    if command -v docker &> /dev/null; then
+        mkdir -p "${backup_location}/docker-info"
+        docker info > "${backup_location}/docker-info/docker-info.txt" 2>/dev/null || true
+        docker network ls > "${backup_location}/docker-info/networks.txt" 2>/dev/null || true
+        info "Docker informatie gebackupt"
+    fi
+    
+    # Backup iptables rules
+    if command -v iptables &> /dev/null; then
+        mkdir -p "${backup_location}/iptables"
+        iptables-save > "${backup_location}/iptables/iptables-rules.txt" 2>/dev/null || true
+        info "iptables rules gebackupt"
+    fi
+    
+    # Maak tar archief
+    local archive_name="/root/backup-${backup_timestamp}.tar.gz"
+    tar -czf "$archive_name" -C "/root" "manual-backup-${backup_timestamp}" 2>/dev/null
+    
+    success "═══════════════════════════════════════════════════════════════"
+    success "  BACKUP SUCCESVOL AFGEROND!"
+    success "═══════════════════════════════════════════════════════════════"
+    echo ""
+    info "Bestanden gebackupt: $backed_up"
+    info "Bestanden overgeslagen: $skipped"
+    echo ""
+    info "Backup directory: $backup_location"
+    info "Backup archief: $archive_name"
+    echo ""
+    
+    read -p "Druk op Enter om terug te gaan..."
+}
+
 ################################################################################
 # MAIN SCRIPT
 ################################################################################
@@ -871,6 +964,7 @@ main() {
                 16) configure_docker_security ;;
                 20) show_system_status ;;
                 21) run_security_audit ;;
+                22) backup_configuration ;;
                 0) 
                     info "Script beëindigd"
                     exit 0
@@ -881,7 +975,7 @@ main() {
                     ;;
             esac
             
-            if [[ $choice != "20" && $choice != "21" && $choice != "0" ]]; then
+            if [[ $choice != "20" && $choice != "21" && $choice != "22" && $choice != "0" ]]; then
                 read -p "Druk op Enter om door te gaan..."
             fi
         done
